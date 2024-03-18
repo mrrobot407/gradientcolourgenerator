@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './app.css'; // Ensure this CSS file exists and contains the necessary styles
+import './app.css';
 
 function App() {
  const [color1, setColor1] = useState('#fd1d1d');
@@ -19,6 +19,18 @@ function App() {
     document.body.style.background = gradient;
  }, [color1, color2, gradientDirection]);
 
+ // Function to parse the gradient string and update color inputs
+ useEffect(() => {
+    const gradient = currentGradient.match(/linear-gradient\(([^)]+)\)/);
+    if (gradient && gradient[1]) {
+      const colors = gradient[1].split(', ');
+      if (colors.length >= 2) {
+        setColor1(colors[1]);
+        setColor2(colors[2]);
+      }
+    }
+ }, [currentGradient]);
+
  const handleColorChange = (e, setColor) => {
     setColor(e.target.value);
  };
@@ -27,10 +39,10 @@ function App() {
     const gradient = `linear-gradient(${gradientDirection}, ${color1}, ${color2})`;
     navigator.clipboard.writeText(gradient);
     setIsCopied(true);
-    setToastMessage('Copied!'); // Set the toast message
+    setToastMessage('Copied!');
     setTimeout(() => {
       setIsCopied(false);
-      setToastMessage(''); // Clear the toast message after 3 seconds
+      setToastMessage('');
     }, 3000);
  };
 
@@ -39,8 +51,8 @@ function App() {
  };
 
  const generateRandomGradient = () => {
-    const newColor1 = '#' + Math.floor(Math.random() * 16777215).toString(16); // Generate random hex color
-    const newColor2 = '#' + Math.floor(Math.random() * 16777215).toString(16); // Generate random hex color
+    const newColor1 = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    const newColor2 = '#' + Math.floor(Math.random() * 16777215).toString(16);
     const gradient = `linear-gradient(45deg, ${newColor1}, ${newColor2})`;
     setCurrentGradient(gradient);
     document.body.style.background = gradient;
@@ -69,34 +81,28 @@ function App() {
  };
 
  return (
-  <>
-    <div className="App main-div" style={{ textAlign: 'center', height: '100vh' }}>
-      <div className="container">
-        <input type="color" value={color1} onChange={(e) => handleColorChange(e, setColor1)} style={{ marginRight: '10px' }} />
-        <input type="color" value={color2} onChange={(e) => handleColorChange(e, setColor2)} />
-        <br />
-        <button className='glass-button' onClick={generateRandomGradient} style={{ marginTop: '20px', marginRight: '10px' }}>Generate Random Gradient</button>
-      
-        <button className='glass-button' onClick={generateRandomGradient} style={{ marginTop: '20px', marginRight: '10px' }}>Generate Spiral Gradient</button>
-        <button className='glass-button save-btn' onClick={saveGradient} style={{ marginTop: '20px' , marginRight: '10px' }}>Save Gradient</button>
-        <div style={{ marginTop: '20px' }}>
-          <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to right')}>Left to Right</button>
-          <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to left')}>Right to Left</button>
-          <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to bottom')}>Top to Bottom</button>
-          <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to top')}>Bottom to Top</button>
+    <>
+      <div className="App main-div" style={{ textAlign: 'center', height: '100vh' }}>
+        <div className="container">
+          <input type="color" value={color1} onChange={(e) => handleColorChange(e, setColor1)} style={{ marginRight: '10px' }} />
+          <input type="color" value={color2} onChange={(e) => handleColorChange(e, setColor2)} />
+          <br />
+          <button className='glass-button' onClick={generateRandomGradient} style={{ marginTop: '20px', marginRight: '10px' }}>Generate Random Gradient</button>
+          <button className='glass-button' onClick={generateRandomGradient} style={{ marginTop: '20px', marginRight: '10px' }}>Generate Spiral Gradient</button>
+          <button className='glass-button save-btn' onClick={saveGradient} style={{ marginTop: '20px' , marginRight: '10px' }}>Save Gradient</button>
+          <div style={{ marginTop: '20px' }}>
+            <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to right')}>Left to Right</button>
+            <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to left')}>Right to Left</button>
+            <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to bottom')}>Top to Bottom</button>
+            <button className='gradstyle-button glass-button' onClick={() => handleDirectionChange('to top')}>Bottom to Top</button>
+          </div>
+          <div className='savegrad' style={{ marginTop: '20px' }}>
+            Background: {currentGradient}
+          </div>
         </div>
-        <div className='savegrad' style={{ marginTop: '20px' }}>
-          Background: {currentGradient}
-        </div>
-       
-    
-   
-       
+        {toastMessage && <ToastMessage message={toastMessage} />}
+        <p className='p-h'>Created by <a href="https://aryanchalotra.10n20.in/">Aryan chalotra</a></p>
       </div>
-      {toastMessage && <ToastMessage message={toastMessage} />}
-      <p className='p-h'>Created by  <a href="https://aryanchalotra.10n20.in/">Aryan chalotra</a></p>
-    </div>
-  
     </>
  );
 }
